@@ -1,0 +1,5 @@
+pyodbc
+ttkbootstrap
+reportlab
+Pillow
+qrcode
