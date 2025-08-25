@@ -56,22 +56,6 @@ DATABASE = "VentasDB_TuNombre"
 
 ## 4) Ejecutar la aplicación
 
-```bash
-python ventas_app.py
-```
-La primera ejecución:
-- Crea la base `VentasDB` (si no existe).
-- Crea tablas mínimas: **Productos, Clientes, Ventas, VentaDetalle, Usuarios**.
-- Crea un **Admin por defecto**: Usuario **N° 1**, contraseña **admin123** (al iniciar se pide cambiarla).
-
-## 5) Tablas/funciones opcionales
-
-La app detecta y usa automáticamente estas tablas si existen. Para activarlas rápido, ejecutá el script **`schema_opcional.sql`** incluido en este repo:
-
-- `Pagos`: múltiples medios de pago por venta.
-- `StockMov`: kardex (INGRESO/VENTA/AJUSTE).
-- `IngresosStock`: ingresos de mercadería (con costo y precio).
-- `HistorialPrecios`: histórico de costo/precio de productos.
-- `CierresCaja`: registros de cierre con totales por período.
-- `Auditoria`: log simple de acciones.
-
+EJECUTA gen_admin.py por primera y unica vez
+luego copia y pega el contenido de schema.sql en una query en SSMS 
+ejecuta ventas_app.py e ingresa con el admin 1, contraseña 1. 

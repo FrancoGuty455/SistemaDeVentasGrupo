@@ -1,8 +1,6 @@
-
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
 from repos import ProductoRepo, IngresoStockRepo
-
 def fmt_money(x) -> str:
     try:
         return f"${float(x):,.2f}"
@@ -89,9 +87,7 @@ class ProductosFrame(ttk.Frame):
 
         self.load()
 
-
     def _get_alt_row_color(self) -> str:
-
         return "#f7f9fc"
 
     def _show_context(self, event):
@@ -127,8 +123,7 @@ class ProductosFrame(ttk.Frame):
 
         activo = (row["Estado"].lower() == "activo")
         return {"ProductoID": row["ProductoID"], "Nombre": row["Nombre"], "Activo": activo}
-
-
+    
     def load(self):
 
         for i in self.tree.get_children():
@@ -173,7 +168,6 @@ class ProductosFrame(ttk.Frame):
         self._render_rows(filtered)
         self.status.config(text=f"{len(filtered)} productos (filtrado)")
 
-
     def _clear_filter(self):
         self.e_search.delete(0, tk.END)
         self._render_rows(self._all_rows)
@@ -205,7 +199,6 @@ class ProductosFrame(ttk.Frame):
             ])
         else:
             self._render_rows(rows)
-
 
     def _add_producto(self):
         nombre = simpledialog.askstring("Producto", "Nombre:", parent=self)
@@ -336,7 +329,6 @@ class EditarProductoDialog(tk.Toplevel):
             self.destroy()
         except Exception as e:
             messagebox.showerror("DB", str(e))
-
 
 class IngresoStockDialog(tk.Toplevel):
     """Registrar ingresos de stock para un producto activo."""

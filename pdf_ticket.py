@@ -7,8 +7,6 @@ from reportlab.lib.units import mm
 from reportlab.lib import colors
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.pdfmetrics import stringWidth
-
-
 try:
     from reportlab.graphics.barcode.qr import QrCodeWidget
     from reportlab.graphics.shapes import Drawing
@@ -16,7 +14,6 @@ try:
     _QR_AVAILABLE = True
 except Exception:
     _QR_AVAILABLE = False
-
 from config import get_connection
 
 def _fetch_empresa():
@@ -35,7 +32,6 @@ def _fetch_empresa():
         return dict(zip(cols, row))
     finally:
         conn.close()
-
 
 def _fetch_venta(venta_id: int):
     conn = get_connection()
@@ -65,17 +61,11 @@ def _fetch_venta(venta_id: int):
         conn.close()
 
 def _fmt_currency(value: float) -> str:
-    """
-    Devuelve formato AR: 1.234,56 (sin símbolo para flexibilidad al alinear)
-    """
     s = f"{value:,.2f}"
     s = s.replace(",", "X").replace(".", ",").replace("X", ".")
     return s
 
 def _wrap_text(txt: str, max_width_mm: float, font_name: str, font_size: float) -> list[str]:
-    """
-    Corta en varias líneas para que no se desborde la columna.
-    """
     if not txt:
         return [""]
     max_width = max_width_mm * mm
@@ -202,7 +192,6 @@ def _draw_table_header(c: canvas.Canvas, x: float, y: float, widths_mm: dict) ->
 
 def _check_page_break(c: canvas.Canvas, y: float, bottom: float, top_after_break: float,
                       draw_header_cb) -> float:
-    """Si no hay espacio suficiente, crea nueva página y re-dibuja encabezado de tabla."""
     if y < bottom:
         c.showPage()
         y = top_after_break
@@ -211,7 +200,7 @@ def _check_page_break(c: canvas.Canvas, y: float, bottom: float, top_after_break
 
 
 def _draw_footer(c: canvas.Canvas, page_w: float, margin_x: float, margin_bottom: float):
-    """Pie de página con numeración y leyenda."""
+
     c.setFont("Helvetica", 8)
     c.setFillColor(colors.HexColor("#6B7280"))
     c.drawString(margin_x, margin_bottom - 6*mm, "Gracias por su compra.")
@@ -249,13 +238,6 @@ def _draw_qr_bottom_right(
 
 
 def generar_ticket_pdf(venta_id: int, ruta: str | None = None, abrir: bool = True) -> str:
-    """
-    Genera un PDF de ticket con diseño mejorado (A4).
-    - Encabezado con banda/QR (opcional) y logo si existe logo.png
-    - Tabla con líneas, filas alternadas y envoltura de nombre
-    - Totales alineados a la derecha y resaltados
-    - Pie con numeración de página
-    """
     cab, det = _fetch_venta(venta_id)
 
     if ruta is None:
@@ -270,7 +252,7 @@ def generar_ticket_pdf(venta_id: int, ruta: str | None = None, abrir: bool = Tru
     MARGIN_TOP = H - 18 * mm
     MARGIN_BOTTOM = 20 * mm
 
-    header_h = 32 * mm  # <--- FALTA ESTO
+    header_h = 32 * mm 
     empresa = _fetch_empresa()
 
 
@@ -284,7 +266,7 @@ def generar_ticket_pdf(venta_id: int, ruta: str | None = None, abrir: bool = Tru
         fecha=cab[1],
         cliente=cab[3],
         empresa=empresa,
-        mostrar_qr=False,  # mantenemos el QR abajo
+        mostrar_qr=False, 
     )
 
     widths_mm = {
@@ -355,7 +337,6 @@ def generar_ticket_pdf(venta_id: int, ruta: str | None = None, abrir: bool = Tru
     c.line(MARGIN_X, y - 2*mm, MARGIN_X + sum(widths_mm.values())*mm, y - 2*mm)
     y -= 8 * mm
 
-
     c.setFont("Helvetica", 9)
     label_x = MARGIN_X + (widths_mm["nombre"] + widths_mm["cant"] + widths_mm["punit"])*mm
     value_x = MARGIN_X + sum(widths_mm.values())*mm
@@ -380,21 +361,15 @@ def generar_ticket_pdf(venta_id: int, ruta: str | None = None, abrir: bool = Tru
     c.drawString(MARGIN_X, y, "Cambio y devoluciones dentro de 48h con ticket. Muchas gracias.")
     y -= 10 * mm
 
-
-
-
-   
-  # QR abajo a la derecha
     _draw_qr_bottom_right(
         c, venta_id=cab[0], page_w=W,
         margin_x=MARGIN_X, margin_bottom=MARGIN_BOTTOM,
         size_mm=16.0
     )
 
-    # Pie
+
     _draw_footer(c, W, MARGIN_X, MARGIN_BOTTOM)
 
-    # ¡Importante! Guardar UNA sola vez y no dibujar nada después
     c.save()
 
     if abrir:
